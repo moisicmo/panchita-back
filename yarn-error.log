@@ -1,0 +1,41 @@
+Arguments: 
+  /Users/macbookpro/.nvm/versions/node/v18.12.1/bin/node /usr/local/bin/yarn add bcryptjs cors date-fns dotenv exceljs express express-validator jsonwebtoken lodash pdfmake pg pg-hstoresequelize
+
+PATH: 
+  /Users/macbookpro/.nvm/versions/node/v18.12.1/bin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/Library/Apple/usr/bin:/usr/local/share/dotnet:~/.dotnet/tools:/Applications/Postgres.app/Contents/Versions/latest/bin:/Users/macbookpro/Development/flutter/bin
+
+Yarn version: 
+  1.22.19
+
+Node version: 
+  18.12.1
+
+Platform: 
+  darwin x64
+
+Trace: 
+  Error: https://registry.yarnpkg.com/pg-hstoresequelize: Not found
+      at params.callback [as _callback] (/usr/local/lib/node_modules/yarn/lib/cli.js:66145:18)
+      at self.callback (/usr/local/lib/node_modules/yarn/lib/cli.js:140890:22)
+      at Request.emit (node:events:513:28)
+      at Request.<anonymous> (/usr/local/lib/node_modules/yarn/lib/cli.js:141862:10)
+      at Request.emit (node:events:513:28)
+      at IncomingMessage.<anonymous> (/usr/local/lib/node_modules/yarn/lib/cli.js:141784:12)
+      at Object.onceWrapper (node:events:627:28)
+      at IncomingMessage.emit (node:events:525:35)
+      at endReadableNT (node:internal/streams/readable:1359:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+
+npm manifest: 
+  {
+    "name": "backend-spuer-balance",
+    "version": "1.0.0",
+    "main": "index.js",
+    "license": "MIT"
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
