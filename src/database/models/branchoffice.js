@@ -24,6 +24,9 @@ module.exports = (sequelize, DataTypes) => {
       branchOffice.hasMany(models.input, {
         foreignKey: 'branchOfficeId'
       });
+      branchOffice.hasMany(models.kardex, {
+        foreignKey: 'branchOfficeId'
+      });
     }
   }
   branchOffice.init({

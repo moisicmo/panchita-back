@@ -18,6 +18,15 @@ module.exports = {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE'
       },
+      staffId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'staffs',
+          key: 'id'
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
+      },
       customerId: {
         type: Sequelize.INTEGER,
         references: {
@@ -35,6 +44,9 @@ module.exports = {
         },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE'
+      },
+      amount: {
+        type: Sequelize.FLOAT,
       },
       state: {
         type: Sequelize.BOOLEAN,

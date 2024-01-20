@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('measurementUnits', {
+    await queryInterface.createTable('discounts', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -12,9 +12,17 @@ module.exports = {
       name: {
         type: Sequelize.STRING
       },
+      percentage: {
+        type: Sequelize.INTEGER
+      },
+      startDate: {
+        type: Sequelize.DATE
+      },
+      endDate: {
+        type: Sequelize.DATE
+      },
       state: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: true
+        type: Sequelize.BOOLEAN
       },
       createdAt: {
         allowNull: false,
@@ -27,6 +35,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('measurementUnits');
+    await queryInterface.dropTable('discounts');
   }
 };

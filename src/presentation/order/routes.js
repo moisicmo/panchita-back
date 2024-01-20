@@ -2,13 +2,14 @@ const { Router } = require('express');
 const { check } = require('express-validator');
 const { validateFields } = require('./../../config');
 const { validateJWT } = require('./../../middlewares');
-const { getOrders, createOrder, updateOrder, deleteOrder } = require('./controller');
+const { getOrders, getDocument, createOrder, updateOrder, deleteOrder } = require('./controller');
 
 const router = Router();
 
 router.use(validateJWT);
 
 router.get('/', getOrders)
+
 
 router.post(
   '/',
@@ -20,6 +21,7 @@ router.post(
   ],
   createOrder
 );
+
 
 router.put(
   '/:orderId',
@@ -36,5 +38,7 @@ router.delete(
   '/:orderId',
   deleteOrder
 );
+
+router.get('/document/:orderId', getDocument);
 
 module.exports = router;

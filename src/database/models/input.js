@@ -19,6 +19,13 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'productId',
         targetKey: 'id'
       });
+      input.hasMany(models.kardex, {
+        foreignKey: 'inputOrOutputId',
+        constraints: false,
+        scope: {
+          commentableType: 'input'
+        }
+      });
     }
   }
   input.init({

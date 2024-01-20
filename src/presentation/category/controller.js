@@ -4,12 +4,7 @@ const { omit } = require("lodash");
 
 const searchCategory = async (categoryId) => {
   const category = await db.category.findByPk(categoryId);
-  if (!category) {
-    return res.status(404).json({
-      errors: [{ msg: 'No se encontró la categoria' }]
-    });
-  }
-  return;
+  return category;
 }
 
 const formatCategory = (category) => ({
@@ -62,7 +57,12 @@ const updateCategory = async (req, res = response) => {
   const { categoryId } = req.params;
   try {
     //encontramos la categoria
-    await searchCategory(categoryId)
+    const category = await searchCategory(categoryId)
+    if (!category) {
+      return res.status(404).json({
+        errors: [{ msg: 'No se encontró la categoria' }]
+      });
+    }
     //modificamos la categoria
     await db.category.update(
       req.body,
@@ -85,7 +85,12 @@ const deleteCategory = async (req, res = response) => {
   const { categoryId } = req.params;
   try {
     //encontramos la categoria
-    await searchCategory(categoryId)
+    const category = await searchCategory(categoryId)
+    if (!category) {
+      return res.status(404).json({
+        errors: [{ msg: 'No se encontró la categoria' }]
+      });
+    }
     //modificamos la categoria
     await db.category.update(
       { state: false },

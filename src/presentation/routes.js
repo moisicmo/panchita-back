@@ -15,7 +15,9 @@ const AppRoutes = async (app) => {
   app.use('/api/customer', require('./customer/routes'));
   app.use('/api/product', require('./product/routes'));
   app.use('/api/order', require('./order/routes'));
-  // app.use('/api/sale', require('./product/routes'));
+  app.use('/api/kardex', require('./kardex/routes'));
+  app.use('/api/input', require('./input/routes'))
+  app.use('/api/sale', require('./sale/routes'));
 
   // app.use('/api/report', require('./product/routes'));
 

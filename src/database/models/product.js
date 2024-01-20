@@ -29,6 +29,15 @@ module.exports = (sequelize, DataTypes) => {
       product.hasMany(models.input, {
         foreignKey: 'productId'
       });
+      product.hasMany(models.price, {
+        foreignKey: 'productId'
+      });
+      product.hasMany(models.productDiscount, {
+        foreignKey: 'productId'
+      });
+      product.hasMany(models.kardex, {
+        foreignKey: 'productId'
+      });
     }
   }
   product.init({
@@ -39,7 +48,6 @@ module.exports = (sequelize, DataTypes) => {
     name: DataTypes.STRING,
     image: DataTypes.STRING,
     barCode: DataTypes.STRING,
-    price: DataTypes.FLOAT,
     visible: DataTypes.BOOLEAN,
     state: DataTypes.BOOLEAN
   }, {

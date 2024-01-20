@@ -1,6 +1,7 @@
 const { response } = require('express');
 const db = require('../../database/models');
 const { omit } = require("lodash");
+const generateDocument = require('./../../config/generatePdf');
 
 const searchOrder = async (orderId) => {
   const order = await db.order.findByPk(orderId, {
@@ -21,31 +22,35 @@ const searchOrder = async (orderId) => {
 }
 
 const formatOrder = (order) => ({
-  ...omit(order.toJSON(), ['branchOfficeId', 'customerId', 'paymentMethodId', 'createdAt', 'updatedAt', 'state', 'businessId']),
+  ...omit(order.toJSON(), ['branchOfficeId', 'staffId', 'customerId', 'paymentMethodId', 'updatedAt', 'state', 'businessId', 'orderOutputs']),
+  staff: {
+    ...omit(order.staff.toJSON(), ['userId', 'state', 'createdAt', 'updatedAt']),
+    user: omit(order.staff.user.toJSON(), ['typeDocumentId', 'createdAt', 'updatedAt']),
+  },
   customer: {
     ...omit(order.customer.toJSON(), ['userId', 'state', 'createdAt', 'updatedAt']),
     user: omit(order.customer.user.toJSON(), ['typeDocumentId', 'createdAt', 'updatedAt']),
   },
   paymentMethod: omit(order.paymentMethod.toJSON(), ['createdAt', 'updatedAt']),
   branchOffice: omit(order.branchOffice.toJSON(), ['businessId', 'state', 'createdAt', 'updatedAt']),
-  orderOutputs:
+  outputIds:
     order.orderOutputs.map((orderOutput) => ({
-      ...omit(orderOutput.toJSON(), ['orderId', 'outputId', 'createdAt', 'updatedAt']),
-      output: {
-        ...omit(orderOutput.output.toJSON(), ['branchOfficeId', 'productId', 'state', 'createdAt', 'updatedAt']),
-        product: {
-          ...omit(orderOutput.output.product.toJSON(), ['businessId', 'categoryId', 'measurementUnitId', 'visible', 'state', 'createdAt', 'updatedAt']),
-          category: omit(orderOutput.output.product.category.toJSON(), ['businessId', 'state', 'createdAt', 'updatedAt']),
-          measurementUnit: omit(orderOutput.output.product.measurementUnit.toJSON(), ['createdAt', 'updatedAt'])
-        }
+      ...omit(orderOutput.output.toJSON(), ['branchOfficeId', 'productId', 'state', 'createdAt', 'updatedAt']),
+      product: {
+        ...omit(orderOutput.output.product.toJSON(), ['businessId', 'categoryId', 'measurementUnitId', 'visible', 'state', 'createdAt', 'updatedAt']),
+        category: omit(orderOutput.output.product.category.toJSON(), ['businessId', 'state', 'createdAt', 'updatedAt']),
+        measurementUnit: omit(orderOutput.output.product.measurementUnit.toJSON(), ['createdAt', 'updatedAt'])
       }
     })),
-
 });
 
 const functionGetOrder = async (orderId = null, where = undefined) => {
   let queryOptions = {
     include: [
+      {
+        model: db.staff,
+        include: [{ model: db.user }]
+      },
       {
         model: db.customer,
         include: [{ model: db.user }]
@@ -99,6 +104,8 @@ const createOrder = async (req, res = response) => {
   try {
     //creamos la order
     const order = new db.order(req.body);
+    order.staffId = req.uid,
+      order.amount = req.body.outputs.reduce((sum, element) => sum + (element.quantity * element.price), 0);
     await order.save();
     await Promise.all(req.body.outputs.map(async item => {
       //creamos el output
@@ -115,6 +122,23 @@ const createOrder = async (req, res = response) => {
       orderOutput.orderId = order.id;
       orderOutput.outputId = output.id;
       await orderOutput.save();
+      // obtener el último registro en el kardex
+      const kardex = await db.kardex.findOne({
+        where: {
+          productId: item.productId,
+          branchOfficeId: req.body.branchOfficeId
+        },
+        order: [['createdAt', 'DESC']]
+      });
+      //registramos como venta en el kardex
+      const newKardex = new db.kardex();
+      newKardex.productId = item.productId;
+      newKardex.branchOfficeId = req.body.branchOfficeId;
+      newKardex.inputOrOutputId = output.id;
+      newKardex.inputOrOutputType = 'outputs';
+      newKardex.detail = 'venta';
+      newKardex.stock = kardex.stock - output.quantity;
+      await newKardex.save();
     }));
     return res.json({
       ok: true,
@@ -252,9 +276,26 @@ const deleteOrder = async (req, res = response) => {
   }
 }
 
+const getDocument = async (req, res = response) => {
+  const { orderId } = req.params;
+  try {
+    const order = await functionGetOrder(orderId)
+    const { pdfBase64 } = await generateDocument(order, 'PROFORMA');
+    res.json({
+      document: pdfBase64
+    });
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+      errors: [{ msg: 'Por favor hable con el administrador' }]
+    });
+  }
+}
+
 module.exports = {
   getOrders,
   createOrder,
   updateOrder,
   deleteOrder,
+  getDocument,
 }

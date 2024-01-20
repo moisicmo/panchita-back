@@ -22,6 +22,9 @@ module.exports = (sequelize, DataTypes) => {
       staff.hasMany(models.branchOfficeStaff, {
         foreignKey: 'staffId'
       });
+      staff.hasMany(models.order, {
+        foreignKey: 'staffId'
+      });
     }
   }
   staff.init({

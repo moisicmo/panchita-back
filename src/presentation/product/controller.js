@@ -3,34 +3,32 @@ const db = require('../../database/models');
 const { omit } = require("lodash");
 
 const searchProduct = async (productId) => {
-  const product = await db.product.findByPk(productId);
-  if (!product) {
-    return res.status(404).json({
-      errors: [{ msg: 'No se encontró el producto' }]
-    });
-  }
-  return;
+  const product = await db.product.findByPk(productId)
+  return product;
 }
 
 const formatProduct = (product) => ({
-  ...omit(product.toJSON(), ['createdAt', 'updatedAt', 'state', 'businessId', 'measurementUnit', 'category']),
-  measurementUnitId: omit(product.measurementUnit.toJSON(), ['createdAt', 'updatedAt']),
-  categoryId: omit(product.category.toJSON(), ['businessId', 'state', 'createdAt', 'updatedAt'])
+  ...omit(product.toJSON(), ['createdAt', 'updatedAt', 'state', 'businessId', 'measurementUnit', 'category', 'prices']),
+  measurementUnitId: omit(product.measurementUnit.toJSON(), ['createdAt', 'updatedAt', 'state']),
+  categoryId: omit(product.category.toJSON(), ['businessId', 'state', 'createdAt', 'updatedAt']),
+  ...omit(product.prices.find((price) => price.state).toJSON(), ['state', 'createdAt', 'updatedAt', 'productId']),
+  id: product.id
 });
 
 const functionGetProduct = async (productId = null, where = undefined) => {
   let queryOptions = {
     include: [
+      { model: db.measurementUnit },
+      { model: db.category },
       {
-        model: db.measurementUnit,
-      },
-      {
-        model: db.category,
+        model: db.price,
+        where: { state: true }
       }
     ],
   };
   if (productId) {
     const product = await db.product.findByPk(productId, queryOptions);
+
     return formatProduct(product);
   } else {
     const products = await db.product.findAll({
@@ -62,6 +60,9 @@ const createProduct = async (req, res = response) => {
     product.code = name.substr(0, 3).toUpperCase();
     product.image = null;
     await product.save();
+    let price = new db.price(req.body);
+    price.productId = product.id;
+    await price.save();
 
     return res.json({
       ok: true,
@@ -78,14 +79,33 @@ const createProduct = async (req, res = response) => {
 
 const updateProduct = async (req, res = response) => {
   const { productId } = req.params;
+  const { price, discount, typeDiscount } = req.body;
   try {
     //encontramos el producto
-    await searchProduct(productId)
+    const product = await searchProduct(productId)
+    if (!product) {
+      return res.status(404).json({
+        errors: [{ msg: 'No se encontró el producto' }]
+      });
+    }
     //modificamos el producto
     await db.product.update(
       req.body,
       { where: { id: productId } }
     )
+    //verificamos si el precio o el descuento cambio
+    const priceProduct = await db.price.findOne({ productId: productId, state: true })
+    if (priceProduct.price != price || priceProduct.discount != discount || priceProduct.typeDiscount != typeDiscount) {
+      await db.price.update(
+        { state: false },
+        { where: { productId: productId } }
+      )
+      let newPrice = new db.price(req.body);
+      newPrice.productId = productId;
+      await newPrice.save();
+    }
+
+
     return res.json({
       ok: true,
       product: await functionGetProduct(productId),
@@ -103,17 +123,26 @@ const deleteProduct = async (req, res = response) => {
   const { productId } = req.params;
   try {
     //encontramos el producto
-    await searchProduct(productId)
+    const product = await searchProduct(productId)
+    if (!product) {
+      return res.status(404).json({
+        errors: [{ msg: 'No se encontró el producto' }]
+      });
+    }
     //modificamos el producto
     await db.product.update(
       { state: false },
       { where: { id: productId } }
     );
-    return res.json({
+    res.json({
       ok: true,
       product: await functionGetProduct(productId),
       msg: 'producto eliminado'
     });
+    await db.price.update(
+      { state: false },
+      { where: { productId: productId } }
+    )
   } catch (error) {
     console.log(error)
     return res.status(500).json({

@@ -15,6 +15,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'branchOfficeId',
         targetKey: 'id'
       });
+      order.belongsTo(models.staff, {
+        foreignKey: 'staffId',
+        targetKey: 'id'
+      });
       order.belongsTo(models.customer, {
         foreignKey: 'customerId',
         targetKey: 'id'
@@ -33,8 +37,10 @@ module.exports = (sequelize, DataTypes) => {
   }
   order.init({
     branchOfficeId: DataTypes.INTEGER,
+    staffId: DataTypes.INTEGER,
     customerId: DataTypes.INTEGER,
     paymentMethodId: DataTypes.INTEGER,
+    amount: DataTypes.FLOAT,
     state: DataTypes.BOOLEAN
   }, {
     sequelize,

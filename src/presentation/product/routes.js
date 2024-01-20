@@ -19,6 +19,8 @@ router.post(
     check('name', 'El nombre es obligatorio').not().isEmpty(),
     check('barCode', 'El nombre es obligatorio').not().isEmpty(),
     check('price', 'El nombre es obligatorio').not().isEmpty(),
+    check('discount', 'El nombre es obligatorio').not().isEmpty(),
+    check('typeDiscount', 'El nombre es obligatorio').not().isEmpty(),
     validateFields
   ],
   createProduct
@@ -30,10 +32,11 @@ router.put(
     check('businessId', 'El id del negocio es obligatorio').not().isEmpty(),
     check('categoryId', 'El id de la categoria es obligatorio').not().isEmpty(),
     check('measurementUnitId', 'El id de la categoria es obligatorio').not().isEmpty(),
-    check('measurementUnitId', 'El id de la categoria es obligatorio').not().isEmpty(),
     check('name', 'El nombre es obligatorio').not().isEmpty(),
     check('barCode', 'El nombre es obligatorio').not().isEmpty(),
     check('price', 'El nombre es obligatorio').not().isEmpty(),
+    check('discount', 'El nombre es obligatorio').not().isEmpty(),
+    check('typeDiscount', 'El nombre es obligatorio').not().isEmpty(),
     validateFields
   ],
   updateProduct

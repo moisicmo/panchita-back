@@ -2,59 +2,44 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('products', {
+    await queryInterface.createTable('kardexs', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      businessId: {
+      productId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'businesses',
+          model: 'products',
           key: 'id'
         },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE'
       },
-      categoryId: {
+      branchOfficeId: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'categories',
+          model: 'branchOffices',
           key: 'id'
         },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE'
       },
-      measurementUnitId: {
+      inputOrOutputId: {
         type: Sequelize.INTEGER,
-        references: {
-          model: 'measurementUnits',
-          key: 'id'
-        },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE'
+        allowNull: false
       },
-      code: {
+      inputOrOutputType: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      detail: {
         type: Sequelize.STRING
       },
-      name: {
-        type: Sequelize.STRING
-      },
-      image: {
-        type: Sequelize.STRING
-      },
-      barCode: {
-        type: Sequelize.STRING
-      },
-      visible: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: true
-      },
-      state: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: true
+      stock: {
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
@@ -65,8 +50,16 @@ module.exports = {
         type: Sequelize.DATE
       }
     });
+
+    // No se especifica directamente la referencia a 'inputs_outputs' aquí
+
+    await queryInterface.addIndex('kardexs', ['inputOrOutputId', 'inputOrOutputType'], {
+      name: 'idx_kardexs_inputOrOutput'
+    });
   },
+
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('products');
+    await queryInterface.removeIndex('kardexs', 'idx_kardexs_inputOrOutput');
+    await queryInterface.dropTable('kardexs');
   }
 };

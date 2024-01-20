@@ -1,17 +1,16 @@
 const pdfMake = require('pdfmake');
-const path = require('path');
 const numeroEnLetras = require('./convertNumbertoString');
 
 const { format } = require('date-fns');
 const esES = require('date-fns/locale/es')
 
-const generatePdf = async (order) => {
+const generatePdf = async (order, title) => {
   const fonts = {
     Roboto: {
-      normal: path.join(__dirname, './../../assets/fonts/Roboto/Roboto-Regular.ttf'),
-      bold: path.join(__dirname, './../../assets/fonts/Roboto/Roboto-Medium.ttf'),
-      italics: path.join(__dirname, './../../assets/fonts/Roboto/Roboto-Italic.ttf'),
-      bolditalics: path.join(__dirname, './../../assets/fonts/Roboto/Roboto-MediumItalic.ttf')
+      normal: 'Helvetica',
+      bold: 'Helvetica-Bold',
+      italics: 'Helvetica-Oblique',
+      bolditalics: 'Helvetica-BoldOblique'
     }
   };
 
@@ -20,16 +19,16 @@ const generatePdf = async (order) => {
     content: [
       {
         table: {
-          widths: ['*', '13%', '50%', '*'],
+          widths: ['*', '13%', '19%', '*'],
           body: [
             [
-              { text: 'DENTISTA', style: 'tableHeader' },
+              { text: 'SUPER BALANCE', style: 'tableHeader' },
               '',
               { text: 'COMPROBANTE N°', style: 'tableComprobante', },
-              `${order.correlative}`
+              `${order.id}`
             ],
             [
-              { text: `Sucursal: Casa Matriz`, style: 'tableHeader' },
+              { text: `Sucursal: ${order.branchOffice.name}`, style: 'tableHeader' },
               '',
               '',
               '',
@@ -40,7 +39,7 @@ const generatePdf = async (order) => {
         layout: 'noBorders',
       },
       { text: '\n' },
-      { text: `COMPROBANTE DE PAGO`, fontSize: 24, alignment: 'center' },
+      { text: `${title}`, fontSize: 24, alignment: 'center' },
       { text: '\n' },
       {
         table: {
@@ -48,25 +47,25 @@ const generatePdf = async (order) => {
           body: [
             [
               { text: 'Fecha:', style: 'tableTitle' },
-              `${format(order.date, 'dd MMMM yyyy', { locale: esES })}`,
+              `${format(order.createdAt, 'dd MMMM yyyy', { locale: esES })}`,
               '',
               '',
             ],
             [
               { text: 'Razon Social:', style: 'tableTitle' },
-              `${order.customer.name}`,
+              `${order.customer.user.name}`,
               '',
               '',
             ],
             [
               { text: 'NIT/CI/Otro:', style: 'tableTitle' },
-              `${order.customer.numberDocument}`,
+              `${order.customer.user.numberDocument}`,
               '',
               '',
             ],
             [
               { text: 'Emitido por:', style: 'tableTitle' },
-              `${order.user.name}`,
+              `${order.staff.user.name}`,
               '',
               '',
             ],
@@ -78,14 +77,22 @@ const generatePdf = async (order) => {
       { text: '\n' },
       {
         table: {
-          widths: ['*'],
+          widths: ['12%', '*', '20%', '15%'],
           body: [
             [
-              { text: 'CONCEPTO', style: 'tableHeader' },
+              { text: 'CANTIDAD', style: 'tableHeader' },
+              { text: 'DESCRIPCION', style: 'tableHeader' },
+              { text: 'PRECIO UNIT.', style: 'tableHeader' },
+              { text: 'SUBTOTAL', style: 'tableHeader' },
             ],
-            [
-              `${order.reason}`,
-            ]
+            ...order.outputIds.map(element => {
+              return [
+                `${element.quantity}`,
+                `${element.product.code} - ${element.product.name}`,
+                `${element.price}`,
+                `${element.quantity * element.price}`,
+              ]
+            })
 
           ],
         },

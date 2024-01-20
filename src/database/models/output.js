@@ -22,6 +22,13 @@ module.exports = (sequelize, DataTypes) => {
       output.hasMany(models.orderOutput, {
         foreignKey: 'outputId'
       });
+      output.hasMany(models.kardex, {
+        foreignKey: 'inputOrOutputId',
+        constraints: false,
+        scope: {
+          commentableType: 'output'
+        }
+      });
     }
   }
   output.init({

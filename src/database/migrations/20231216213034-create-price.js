@@ -2,15 +2,32 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('measurementUnits', {
+    await queryInterface.createTable('prices', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      name: {
-        type: Sequelize.STRING
+      productId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'products',
+          key: 'id'
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
+      },
+      price: {
+        type: Sequelize.FLOAT
+      },
+      discount: {
+        type: Sequelize.FLOAT,
+        defaultValue: 0.0
+      },
+      typeDiscount: {
+        type: Sequelize.STRING,
+        defaultValue: 'monto'
       },
       state: {
         type: Sequelize.BOOLEAN,
@@ -27,6 +44,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('measurementUnits');
+    await queryInterface.dropTable('prices');
   }
 };
