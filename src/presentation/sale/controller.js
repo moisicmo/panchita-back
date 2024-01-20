@@ -129,8 +129,8 @@ const createSale = async (req, res = response) => {
 }
 
 const getDocument = async (req, res = response) => {
-  const { orderId } = req.params;
-  try {
+const { orderId } = req.params;
+try {
     res.json({
       document: await getPdf(orderId)
     });
