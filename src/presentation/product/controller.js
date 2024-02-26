@@ -1,6 +1,7 @@
 const { response } = require('express');
 const db = require('../../database/models');
 const { omit } = require("lodash");
+const uuid = require('uuid');
 
 const searchProduct = async (productId) => {
   const product = await db.product.findByPk(productId)
@@ -55,9 +56,12 @@ const getProducts = async (req, res = response) => {
 const createProduct = async (req, res = response) => {
   try {
     const { name } = req.body;
-    //creamos el producto
+    const uuid4 = uuid.v4();
+    const nameInitials = name.substr(0, 3).toUpperCase();
+    const numericUuid = uuid4.replace(/\D/g, '');
+    const uuidSlice = numericUuid.slice(0, 2) + numericUuid.slice(-2);
     let product = new db.product(req.body);
-    product.code = name.substr(0, 3).toUpperCase();
+    product.code = nameInitials + uuidSlice;
     product.image = null;
     await product.save();
     let price = new db.price(req.body);
@@ -93,8 +97,10 @@ const updateProduct = async (req, res = response) => {
       req.body,
       { where: { id: productId } }
     )
+
     //verificamos si el precio o el descuento cambio
-    const priceProduct = await db.price.findOne({ productId: productId, state: true })
+    const priceProduct = await db.price.findOne({ where: { productId: productId, state: true } });
+    console.log(JSON.stringify(priceProduct));
     if (priceProduct.price != price || priceProduct.discount != discount || priceProduct.typeDiscount != typeDiscount) {
       await db.price.update(
         { state: false },

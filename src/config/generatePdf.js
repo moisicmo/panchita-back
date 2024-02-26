@@ -16,99 +16,113 @@ const generatePdf = async (order, title) => {
 
   const printer = new pdfMake(fonts);
   const docDefinition = {
+    pageSize: "LETTER",
+    pageMargins: [40, 50, 40, 50],
+    defaultStyle: {
+      fontSize: 12,
+    },
     content: [
       {
+        margin: [0, 30, 0, 0],
+        layout: 'noBorders',
         table: {
-          widths: ['*', '13%', '19%', '*'],
+          widths: ['*', '*'],
           body: [
             [
-              { text: 'SUPER BALANCE', style: 'tableHeader' },
-              '',
-              { text: 'COMPROBANTE N°', style: 'tableComprobante', },
-              `${order.id}`
+              { text: 'SUPER BALANCE', style: 'styleLeft' },
+              { text: `COMPROBANTE N° ${order.id}`, style: 'styleRight' },
             ],
             [
-              { text: `Sucursal: ${order.branchOffice.name}`, style: 'tableHeader' },
-              '',
-              '',
-              '',
+              { text: `Sucursal: ${order.branchOffice.name}`, style: 'styleLeft', colSpan: 2 },
+            ],
+            [
+              { text: `Dirección: ${order.branchOffice.address}`, style: 'styleLeft', colSpan: 2 },
+            ],
+            [
+              { text: `Teléfono: ${order.branchOffice.phone}`, style: 'styleLeft', colSpan: 2 },
             ],
           ],
 
         },
-        layout: 'noBorders',
       },
-      { text: '\n' },
-      { text: `${title}`, fontSize: 24, alignment: 'center' },
-      { text: '\n' },
       {
+        margin: [0, 30, 0, 0],
+        text: `${title}`, fontSize: 24, alignment: 'center', bold: true,
+      },
+      {
+        margin: [0, 30, 0, 0],
+        layout: 'noBorders',
         table: {
-          widths: ['15%', '50%', '*', '*'],
+          widths: ['auto', '*'],
           body: [
             [
-              { text: 'Fecha:', style: 'tableTitle' },
+              { text: 'Fecha:', style: 'styleLeft', bold: true },
               `${format(order.createdAt, 'dd MMMM yyyy', { locale: esES })}`,
-              '',
-              '',
             ],
             [
-              { text: 'Razon Social:', style: 'tableTitle' },
+              { text: 'Razon Social:', style: 'styleLeft', bold: true },
               `${order.customer.user.name}`,
-              '',
-              '',
             ],
             [
-              { text: 'NIT/CI/Otro:', style: 'tableTitle' },
+              { text: 'NIT/CI/Otro:', style: 'styleLeft', bold: true },
               `${order.customer.user.numberDocument}`,
-              '',
-              '',
             ],
             [
-              { text: 'Emitido por:', style: 'tableTitle' },
+              { text: 'Emitido por:', style: 'styleLeft', bold: true },
               `${order.staff.user.name}`,
-              '',
-              '',
             ],
           ],
-
         },
-        layout: 'noBorders',
       },
-      { text: '\n' },
       {
+        margin: [0, 30, 0, 0],
+        layout: {
+          hLineWidth: function (_, _) {
+            return 1;
+          },
+          vLineWidth: function (_, _) {
+            return 0;
+          }
+        },
         table: {
-          widths: ['12%', '*', '20%', '15%'],
+          widths: ['8%', '12%', '*', '18%', '9%', '14%'],
           body: [
             [
-              { text: 'CANTIDAD', style: 'tableHeader' },
-              { text: 'DESCRIPCION', style: 'tableHeader' },
-              { text: 'PRECIO UNIT.', style: 'tableHeader' },
-              { text: 'SUBTOTAL', style: 'tableHeader' },
+              { text: 'CANT.', bold: true, style: 'styleRight', margin: [1, 3, 1, 3] },
+              { text: 'UND. DE MEDIDA', bold: true, style: 'styleLeft', margin: [1, 3, 1, 3]  },
+              { text: 'DESCRIPCION', bold: true, style: 'styleCenter', margin: [1, 3, 1, 3]  },
+              { text: 'PRECIO UNIT.', bold: true , style: 'styleRight', margin: [1, 3, 1, 3] },
+              { text: 'DESC.', bold: true, style: 'styleRight', margin: [1, 3, 1, 3]  },
+              { text: 'SUBTOTAL', bold: true, style: 'styleRight', margin: [1, 3, 1, 3]  },
             ],
             ...order.outputIds.map(element => {
               return [
-                `${element.quantity}`,
-                `${element.product.code} - ${element.product.name}`,
-                `${element.price}`,
-                `${element.quantity * element.price}`,
+                { text: `${element.quantity}`, style: 'styleRight', margin: [1, 3, 1, 3]},
+                { text: `${element.product.measurementUnit.name}`, style: 'styleLeft', margin: [1, 3, 1, 3]},
+                { text: `${element.product.code} - ${element.product.name}`, style: 'styleCenter', margin: [1, 3, 1, 3]},
+                { text: `${element.price}`, style: 'styleRight', margin: [1, 3, 1, 3]},
+                { text: `${element.discount}`, style: 'styleRight', margin: [1, 3, 1, 3]},
+                { text: `${element.quantity * element.price}`, style: 'styleRight', margin: [1, 3, 1, 3]},
               ]
-            })
-
+            }),
           ],
         },
       },
       {
+        margin: [0, 30, 5, 0],
+        layout: 'noBorders',
         table: {
-          widths: ['*', '36.8%'],
+          widths: ['*', '30%'],
           body: [
             [
-              { text: `Son: ${numeroEnLetras(order.amount)} 00/100 Bolivianos`, style: 'tableTitle' },
+              { text: `Son: ${numeroEnLetras(order.amount)} 00/100 Bolivianos`, style: 'styleLeft' },
               {
+                layout: 'noBorders',
                 table: {
-                  widths: ['57.7%', '*'],
+                  widths: ['*', 'auto'],
                   body: [
                     [
-                      { text: 'TOTAL:', style: 'tableComprobante' },
+                      { text: 'TOTAL A PAGAR:', style: 'styleRight' },
                       `${order.amount}`
                     ],
                   ]
@@ -117,28 +131,20 @@ const generatePdf = async (order, title) => {
             ]
           ]
         },
-        layout: 'noBorders',
       }
     ],
     styles: {
-      tableHeader: {
-        bold: true,
-        fontSize: 10,
+      styleCenter: {
         alignment: 'center'
       },
-      tableTitle: {
-        bold: true,
-        fontSize: 10,
+      styleLeft: {
         alignment: 'left'
       },
-      tableComprobante: {
-        bold: true,
-        fontSize: 10,
+      styleRight: {
         alignment: 'right'
       }
     }
   };
-
   return new Promise((resolve, reject) => {
     const pdfDoc = printer.createPdfKitDocument(docDefinition);
 

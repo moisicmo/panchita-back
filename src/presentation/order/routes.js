@@ -2,7 +2,7 @@ const { Router } = require('express');
 const { check } = require('express-validator');
 const { validateFields } = require('./../../config');
 const { validateJWT } = require('./../../middlewares');
-const { getOrders, getDocument, createOrder, updateOrder, deleteOrder } = require('./controller');
+const { getOrders, getOrderByBranchOffice, getDocument, createOrder, updateOrder, deleteOrder } = require('./controller');
 
 const router = Router();
 
@@ -10,6 +10,7 @@ router.use(validateJWT);
 
 router.get('/', getOrders)
 
+router.get('/:branchOfficeId',getOrderByBranchOffice)
 
 router.post(
   '/',

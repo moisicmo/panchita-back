@@ -27,10 +27,7 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'paymentMethodId',
         targetKey: 'id'
       });
-      order.hasMany(models.sale, {
-        foreignKey: 'orderId'
-      });
-      order.hasMany(models.orderOutput, {
+      order.hasMany(models.output, {
         foreignKey: 'orderId'
       });
     }
@@ -41,7 +38,9 @@ module.exports = (sequelize, DataTypes) => {
     customerId: DataTypes.INTEGER,
     paymentMethodId: DataTypes.INTEGER,
     amount: DataTypes.FLOAT,
-    state: DataTypes.BOOLEAN
+    document:DataTypes.STRING,
+    stateSale: DataTypes.BOOLEAN,
+    state: DataTypes.BOOLEAN,
   }, {
     sequelize,
     modelName: 'order',

@@ -16,11 +16,12 @@ module.exports = (sequelize, DataTypes) => {
         targetKey: 'id'
       });
       output.belongsTo(models.product, {
-        foreignKey: 'productId',
+        foreignKey: 'orderId',
         targetKey: 'id'
       });
-      output.hasMany(models.orderOutput, {
-        foreignKey: 'outputId'
+      output.belongsTo(models.product, {
+        foreignKey: 'productId',
+        targetKey: 'id'
       });
       output.hasMany(models.kardex, {
         foreignKey: 'inputOrOutputId',
@@ -33,12 +34,12 @@ module.exports = (sequelize, DataTypes) => {
   }
   output.init({
     branchOfficeId: DataTypes.INTEGER,
+    orderId: DataTypes.INTEGER,
     productId: DataTypes.INTEGER,
     quantity: DataTypes.INTEGER,
     price: DataTypes.FLOAT,
     discount: DataTypes.FLOAT,
     typeDiscount: DataTypes.STRING,
-    state: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'output',

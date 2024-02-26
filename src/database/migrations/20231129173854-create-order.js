@@ -48,6 +48,13 @@ module.exports = {
       amount: {
         type: Sequelize.FLOAT,
       },
+      document: {
+        type: Sequelize.STRING,
+      },
+      stateSale: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+      },
       state: {
         type: Sequelize.BOOLEAN,
         defaultValue: true

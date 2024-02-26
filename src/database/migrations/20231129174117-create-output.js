@@ -9,6 +9,15 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      orderId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'orders',
+          key: 'id'
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
+      },
       branchOfficeId: {
         type: Sequelize.INTEGER,
         references: {
@@ -39,10 +48,6 @@ module.exports = {
       typeDiscount: {
         type: Sequelize.STRING,
         defaultValue: "monto"
-      },
-      state: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: true
       },
       createdAt: {
         allowNull: false,

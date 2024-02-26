@@ -27,22 +27,6 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'inputOrOutputId',
         constraints: false
       });
-      // kardex.belongsTo(models.input, {
-      //   foreignKey: 'inputOrOutputId',
-      //   constraints: false,
-      //   as: 'inputAssociation',
-      //   scope: {
-      //     inputOrOutputType: 'input',
-      //   },
-      // });
-      // kardex.belongsTo(models.output, {
-      //   foreignKey: 'inputOrOutputId',
-      //   constraints: false,
-      //   as: 'outputAssociation',
-      //   scope: {
-      //     inputOrOutputType: 'output',
-      //   },
-      // });
     }
   }
   kardex.init({
