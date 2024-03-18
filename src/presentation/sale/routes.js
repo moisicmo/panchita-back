@@ -8,7 +8,7 @@ router.use(validateJWT);
 
 router.get('/', getSales)
 
-router.post('/:orderId', createSale)
+router.post('/:orderId', createSale);
 
 router.get('/document/:saleId', getDocument);
 

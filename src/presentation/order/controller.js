@@ -17,7 +17,7 @@ const searchOrder = async (orderId) => {
 }
 
 const formatOrder = (order) => ({
-  ...omit(order.toJSON(), ['branchOfficeId', 'staffId', 'customerId', 'paymentMethodId', 'updatedAt', 'state', 'businessId']),
+  ...omit(order.toJSON(), ['branchOfficeId', 'staffId', 'customerId', 'paymentMethodId', 'updatedAt', 'businessId']),
   staff: {
     ...omit(order.staff.toJSON(), ['userId', 'state', 'createdAt', 'updatedAt']),
     user: omit(order.staff.user.toJSON(), ['typeDocumentId', 'createdAt', 'updatedAt']),
@@ -28,7 +28,7 @@ const formatOrder = (order) => ({
   },
   paymentMethod: omit(order.paymentMethod.toJSON(), ['createdAt', 'updatedAt']),
   branchOffice: omit(order.branchOffice.toJSON(), ['businessId', 'state', 'createdAt', 'updatedAt']),
-  
+
   outputs: order.outputs.map((output) => (
     {
       ...omit(output.toJSON(), ['createdAt', 'updatedAt']),
@@ -110,9 +110,32 @@ const getOrderByBranchOffice = async (req, res = response) => {
   }
 }
 
+const createSale = async (req, res = response) => {
+  try {
+    const { orderId } = req.params;
+    await db.order.update(
+      { stateSale: true },
+      { where: { id: orderId } }
+    );
+    const orderInfo = await functionGetOrder(orderId)
+    const { pdfBase64 } = await generateDocument(orderInfo, 'NOTA DE VENTA');
+    return res.json({
+      ok: true,
+      // products: productsWithBranchOfficeId,
+      document: pdfBase64,
+      msg: 'venta registrada exitosamente'
+    });
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+      errors: [{ msg: 'Por favor hable con el administrador' }]
+    });
+  }
+}
+
 const createOrder = async (req, res = response) => {
   try {
-    //creamos la order
+    //creamos la orden
     const order = new db.order(req.body);
     order.staffId = req.uid;
 
@@ -183,23 +206,48 @@ const updateOrder = async (req, res = response) => {
         errors: [{ msg: 'No se encontró la orden' }]
       });
     }
-    // Identificamos los productos que deben revertirse
-    const productsToInput = order.outputs.filter(
-      (orderOutput) => !req.body.outputs.map(output => output.product.id).includes(orderOutput.product.id)
-    );
-    console.log(productsToInput)
-
-    // Revertimos los productos  //TODO revisar
-    await Promise.all(productsToInput.map(async (item) => {
-      // Agregamos al nuevo input
-      const input = new db.input({
-        branchOfficeId: req.body.branchOfficeId,
-        productId: item.product.id,
-        quantity: item.quantity,
-        price: item.price,
+    // actualizamos los outputs
+    await Promise.all(req.body.outputs.map(async (item) => {
+      //encontramos el registro original del output
+      const output = await db.output.findOne({where:{id:item.id}})
+      await db.output.update(
+        {
+          quantity: item.quantity
+        },
+        { where: { id: item.id } }
+      );
+      // obtener el último registro en el kardex
+      const kardex = await db.kardex.findOne({
+        where: {
+          productId: item.productId,
+          branchOfficeId: req.body.branchOfficeId
+        },
+        order: [['createdAt', 'DESC']]
       });
-      await input.save();
+      // actualizamos el kardex
+      await db.kardex.update(
+        {
+          stock: kardex.stock+ (output.quantity-item.quantity)
+        },
+        { where: { 
+          inputOrOutputId:item.id,
+          inputOrOutputType: 'outputs',
+         } }
+      );
+    }));
 
+    // Verificamos, creamos
+    await Promise.all(req.body.newOutputs.map(async (item) => {
+      //creamos el output
+      const output = new db.output();
+      output.branchOfficeId = req.body.branchOfficeId;
+      output.orderId = order.id;
+      output.productId = item.product.id;
+      output.quantity = item.quantity;
+      output.price = item.product.price;
+      output.discount = item.discount;
+      output.typeDiscount = item.typeDiscount;
+      await output.save();
       // obtener el último registro en el kardex
       const kardex = await db.kardex.findOne({
         where: {
@@ -208,78 +256,32 @@ const updateOrder = async (req, res = response) => {
         },
         order: [['createdAt', 'DESC']]
       });
-      // Creamos el registro del kardex
       // registramos como venta en el kardex
       const newKardex = new db.kardex();
       newKardex.productId = item.product.id;
       newKardex.branchOfficeId = req.body.branchOfficeId;
-      newKardex.inputOrOutputId = input.id;
-      newKardex.inputOrOutputType = 'inputs';
-      newKardex.detail = 'ajuste';
-      newKardex.stock = kardex.stock - input.quantity;
+      newKardex.inputOrOutputId = output.id;
+      newKardex.inputOrOutputType = 'outputs';
+      newKardex.detail = 'pre venta';
+      newKardex.stock = kardex.stock - output.quantity;
       await newKardex.save();
     }));
-
-    // Verificamos, creamos o actualizamos productos
-    const allOrderOutputs = order.outputs.map((orderOutput) => orderOutput.product.id);
-    await Promise.all(req.body.outputs.map(async item => {
-      if (!allOrderOutputs.includes(item.product.id)) {
-        // Si no se encuentra; lo registramos
-        const output = new db.output({
-          orderId: orderId,
-          branchOfficeId: req.body.branchOfficeId,
-          productId: item.product.id,
-          quantity: item.quantity,
-          price: item.product.price,
-          discount: item.discount,
-          typeDiscount: item.typeDiscount,
-        });
-        await output.save();
-        // obtener el último registro en el kardex
-        const kardex = await db.kardex.findOne({
-          where: {
-            productId: item.product.id,
-            branchOfficeId: req.body.branchOfficeId
-          },
-          order: [['createdAt', 'DESC']]
-        });
-        // Creamos el registro del kardex
-        // registramos como venta en el kardex
-        const newKardex = new db.kardex();
-        newKardex.productId = item.product.id;
-        newKardex.branchOfficeId = req.body.branchOfficeId;
-        newKardex.inputOrOutputId = output.id;
-        newKardex.inputOrOutputType = 'outputs';
-        newKardex.detail = 'pre venta';
-        newKardex.stock = kardex.stock - output.quantity;
-        await newKardex.save();
-      } else {
-        // Si existe, actualizamos
-        console.log(item)
-        await db.output.update(
-          item,
-          { where: { id: item.id } }
-        );
-      }
-    }));
-
     //actualizamos la orden
     await db.order.update(
       {
-        amount: req.body.outputs.reduce((sum, element) => sum + (element.quantity * element.price), 0)
+        amount: req.body.outputs.reduce((sum, element) => sum + (element.quantity * element.price), 0)+req.body.newOutputs.reduce((sum, element) => sum + (element.quantity * element.product.price), 0)
       },
       { where: { id: orderId } }
     );
-
-    // return res.json({
-    //   ok: true,
-    //   order: await functionGetOrder(orderId),
-    //   msg: 'Orden editada exitosamente'
-    // });
-
+    const orderInfo = await functionGetOrder(order.id)
+    const { pdfBase64 } = await generateDocument(orderInfo, 'PROFORMA');
     return res.json({
-      ok: true
-    })
+      ok: true,
+      order: orderInfo,
+      document: pdfBase64,
+      msg: 'Orden editada exitosamente'
+    });
+
   } catch (error) {
     console.error(error);
     return res.status(500).json({
@@ -291,33 +293,46 @@ const updateOrder = async (req, res = response) => {
 const deleteOrder = async (req, res = response) => {
   const { orderId } = req.params;
   try {
-    //encontramos la orden
+    // encontramos la orden
     const order = await searchOrder(orderId);
     if (!order) {
       return res.status(404).json({
         errors: [{ msg: 'No se encontró la orden' }]
       });
     }
-    //modificamos la orden
+    // modificamos la orden
     await db.order.update(
       { state: false },
       { where: { id: orderId } }
     );
+    console.log(order.outputs);
     // actualizamos los outputs y movemos a input
-    await Promise.all(order.orderOutputs.map(async item => {
-      // ponemos oputput en falso
-      await db.output.update(
-        { where: { productId: item.output.productId } }
-      );
+    await Promise.all(order.outputs.map(async item => {
       // Agregamos al nuevo input
       const input = new db.input({
-        branchOfficeId: item.output.branchOfficeId,
-        productId: item.output.productId,
-        quantity: item.output.quantity,
-        price: item.output.price,
+        branchOfficeId: item.branchOfficeId,
+        productId: item.productId,
+        quantity: item.quantity,
+        price: item.price,
       });
       await input.save();
-
+      // obtener el último registro en el kardex
+      const kardex = await db.kardex.findOne({
+        where: {
+          productId: item.productId,
+          branchOfficeId: item.branchOfficeId
+        },
+        order: [['createdAt', 'DESC']]
+      });
+      //registramos en el kardex
+      const newKardex = new db.kardex();
+      newKardex.productId = item.productId;
+      newKardex.branchOfficeId = item.branchOfficeId;
+      newKardex.inputOrOutputId = input.id;
+      newKardex.inputOrOutputType = 'inputs';
+      newKardex.detail = 'devolución';
+      newKardex.stock = (kardex.stock + input.quantity)
+      await newKardex.save();
     }));
 
     return res.json({
@@ -337,7 +352,7 @@ const getDocument = async (req, res = response) => {
   const { orderId } = req.params;
   try {
     const order = await functionGetOrder(orderId)
-    const { pdfBase64 } = await generateDocument(order, 'PROFORMA');
+    const { pdfBase64 } = await generateDocument(order, order.stateSale ? 'NOTA DE VENTA' : 'PROFORMA');
     res.json({
       document: pdfBase64
     });
@@ -352,6 +367,7 @@ const getDocument = async (req, res = response) => {
 module.exports = {
   getOrders,
   getOrderByBranchOffice,
+  createSale,
   createOrder,
   updateOrder,
   deleteOrder,

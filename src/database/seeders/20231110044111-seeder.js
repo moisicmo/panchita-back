@@ -109,66 +109,179 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date()
       },
-      //pacientes
+      //clientes
       {
-        name: 'ver pacientes',
-        module: 'pacientes',
+        name: 'ver clientes',
+        module: 'clientes',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        name: 'crear pacientes',
-        module: 'pacientes',
+        name: 'crear clientes',
+        module: 'clientes',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        name: 'editar pacientes',
-        module: 'pacientes',
+        name: 'editar clientes',
+        module: 'clientes',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        name: 'eliminar pacientes',
-        module: 'pacientes',
+        name: 'eliminar clientes',
+        module: 'clientes',
         createdAt: new Date(),
         updatedAt: new Date()
       },
-      //calendario
+      //tipos de documentos
       {
-        name: 'ver calendario',
-        module: 'calendario',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        name: 'efectuar pago',
-        module: 'calendario',
+        name: 'ver tipos de documentos',
+        module: 'tipos de documentos',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        name: 'eliminar pago',
-        module: 'calendario',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      //tratamiento
-      {
-        name: 'crear tratamiento',
-        module: 'tratamiento',
+        name: 'crear tipos de documentos',
+        module: 'tipos de documentos',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        name: 'editar tratamiento',
-        module: 'tratamiento',
+        name: 'editar tipos de documentos',
+        module: 'tipos de documentos',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        name: 'eliminar tratamiento',
-        module: 'tratamiento',
+        name: 'eliminar tipos de documentos',
+        module: 'tipos de documentos',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      //productos
+      {
+        name: 'ver productos',
+        module: 'productos',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'crear productos',
+        module: 'productos',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'editar productos',
+        module: 'productos',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'eliminar productos',
+        module: 'productos',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      //categoria
+      {
+        name: 'ver categorias',
+        module: 'categorias',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'crear categorias',
+        module: 'categorias',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'editar categorias',
+        module: 'categorias',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'eliminar categorias',
+        module: 'categorias',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      //unidades de medidas
+      {
+        name: 'ver unidades de medidas',
+        module: 'unidades de medidas',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'crear unidades de medidas',
+        module: 'unidades de medidas',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'editar unidades de medidas',
+        module: 'unidades de medidas',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'eliminar unidades de medidas',
+        module: 'unidades de medidas',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      //movimientos
+      {
+        name: 'ver movimientos',
+        module: 'movimientos',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'crear ingreso de productos',
+        module: 'movimientos',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      //ordenes y ventas
+      {
+        name: 'ver ordenes y ventas',
+        module: 'ordenes y ventas',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'editar orden',
+        module: 'ordenes y ventas',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'eliminar orden o venta',
+        module: 'ordenes y ventas',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      //punto de venta
+      {
+        name: 'ver punto de venta',
+        module: 'punto de venta',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'agregar items al carrito',
+        module: 'punto de venta',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'vender',
+        module: 'punto de venta',
         createdAt: new Date(),
         updatedAt: new Date()
       },

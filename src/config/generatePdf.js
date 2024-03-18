@@ -42,7 +42,6 @@ const generatePdf = async (order, title) => {
               { text: `Teléfono: ${order.branchOffice.phone}`, style: 'styleLeft', colSpan: 2 },
             ],
           ],
-
         },
       },
       {
@@ -89,21 +88,21 @@ const generatePdf = async (order, title) => {
           body: [
             [
               { text: 'CANT.', bold: true, style: 'styleRight', margin: [1, 3, 1, 3] },
-              { text: 'UND. DE MEDIDA', bold: true, style: 'styleLeft', margin: [1, 3, 1, 3]  },
-              { text: 'DESCRIPCION', bold: true, style: 'styleCenter', margin: [1, 3, 1, 3]  },
-              { text: 'PRECIO UNIT.', bold: true , style: 'styleRight', margin: [1, 3, 1, 3] },
-              { text: 'DESC.', bold: true, style: 'styleRight', margin: [1, 3, 1, 3]  },
-              { text: 'SUBTOTAL', bold: true, style: 'styleRight', margin: [1, 3, 1, 3]  },
+              { text: 'UND. DE MEDIDA', bold: true, style: 'styleLeft', margin: [1, 3, 1, 3] },
+              { text: 'DESCRIPCION', bold: true, style: 'styleCenter', margin: [1, 3, 1, 3] },
+              { text: 'PRECIO UNIT.', bold: true, style: 'styleRight', margin: [1, 3, 1, 3] },
+              { text: 'DESC.', bold: true, style: 'styleRight', margin: [1, 3, 1, 3] },
+              { text: 'SUBTOTAL', bold: true, style: 'styleRight', margin: [1, 3, 1, 3] },
             ],
-            ...order.outputIds.map(element => {
-              return [
-                { text: `${element.quantity}`, style: 'styleRight', margin: [1, 3, 1, 3]},
-                { text: `${element.product.measurementUnit.name}`, style: 'styleLeft', margin: [1, 3, 1, 3]},
-                { text: `${element.product.code} - ${element.product.name}`, style: 'styleCenter', margin: [1, 3, 1, 3]},
-                { text: `${element.price}`, style: 'styleRight', margin: [1, 3, 1, 3]},
-                { text: `${element.discount}`, style: 'styleRight', margin: [1, 3, 1, 3]},
-                { text: `${element.quantity * element.price}`, style: 'styleRight', margin: [1, 3, 1, 3]},
-              ]
+            ...order.outputs.filter((e)=>e.quantity != 0).map(element => {
+                return [
+                  { text: `${element.quantity}`, style: 'styleRight', margin: [1, 3, 1, 3] },
+                  { text: `${element.product.measurementUnit.name}`, style: 'styleLeft', margin: [1, 3, 1, 3] },
+                  { text: `${element.product.code} - ${element.product.name}`, style: 'styleCenter', margin: [1, 3, 1, 3] },
+                  { text: `${element.price}`, style: 'styleRight', margin: [1, 3, 1, 3] },
+                  { text: `${element.discount}`, style: 'styleRight', margin: [1, 3, 1, 3] },
+                  { text: `${element.quantity * element.price}`, style: 'styleRight', margin: [1, 3, 1, 3] },
+                ];
             }),
           ],
         },

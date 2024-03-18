@@ -24,8 +24,8 @@ const functionGetKardex = async (kardexId = null,where = undefined) => {
   let queryOptions = {
     include: [
       {
-         model: db.product,
-         include: [
+        model: db.product,
+        include: [
           { model: db.measurementUnit },
           { model: db.category },
           {
@@ -35,10 +35,21 @@ const functionGetKardex = async (kardexId = null,where = undefined) => {
         ],
       },
       { model: db.branchOffice },
-      { model: db.input, as: 'input', required: false },
-      { model: db.output, as: 'output', required: false },
+      { 
+        model: db.input, 
+        as: 'input', 
+        required: false,
+        order: [['createdAt', 'DESC']] // Ordena por la columna createdAt en orden descendente
+      },
+      { 
+        model: db.output, 
+        as: 'output', 
+        required: false,
+        order: [['createdAt', 'DESC']] // Ordena por la columna createdAt en orden descendente
+      },
     ],
   };
+  
   if (kardexId) {
     const kardexSearch = await db.kardex.findByPk(kardexId, queryOptions);
     const kardex =  formatKardex(kardexSearch);
@@ -107,13 +118,37 @@ const groupKardex = (inputArray) => {
     } else if (item.inputOrOutputType === 'outputs') {
       productEntry.stock -= item.output.quantity;
     }
-    productEntry.kardex.push({
-      id: item.id,
-      inputOrOutputType: item.inputOrOutputType,
-      detail: item.detail,
-      output: item.output,
-      input: item.input,
-    });
+    
+    // Determinar la fecha de creación a utilizar para ordenar
+    const createdAt = item.inputOrOutputType === 'inputs' ? item.input.createdAt : item.output.createdAt;
+
+    // Insertar en orden según la fecha de creación
+    let inserted = false;
+    for (let i = 0; i < productEntry.kardex.length; i++) {
+      if (new Date(productEntry.kardex[i].createdAt) > new Date(createdAt)) {
+        productEntry.kardex.splice(i, 0, {
+          id: item.id,
+          inputOrOutputType: item.inputOrOutputType,
+          detail: item.detail,
+          output: item.output,
+          input: item.input,
+          createdAt: createdAt
+        });
+        inserted = true;
+        break;
+      }
+    }
+
+    if (!inserted) {
+      productEntry.kardex.push({
+        id: item.id,
+        inputOrOutputType: item.inputOrOutputType,
+        detail: item.detail,
+        output: item.output,
+        input: item.input,
+        createdAt: createdAt
+      });
+    }
 
     return acc;
   }, []);
