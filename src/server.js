@@ -42,9 +42,6 @@ class Server {
     // Directorio Público
     const publicPath = path.resolve(__dirname, './../public');
     this.app.use(express.static(publicPath));
-    this.app.get('*', (req, res) => {
-      res.sendFile(path.resolve(__dirname, './../public/index.html'))
-  })
   }
 
   routes() {
