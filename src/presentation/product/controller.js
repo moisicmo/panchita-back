@@ -10,8 +10,8 @@ const searchProduct = async (productId) => {
 
 const formatProduct = (product) => ({
   ...omit(product.toJSON(), ['createdAt', 'updatedAt', 'state', 'businessId', 'measurementUnit', 'category', 'prices']),
-  measurementUnitId: omit(product.measurementUnit.toJSON(), ['createdAt', 'updatedAt', 'state']),
-  categoryId: omit(product.category.toJSON(), ['businessId', 'state', 'createdAt', 'updatedAt']),
+  measurementUnit: omit(product.measurementUnit.toJSON(), ['createdAt', 'updatedAt', 'state']),
+  category: omit(product.category.toJSON(), ['businessId', 'state', 'createdAt', 'updatedAt']),
   ...omit(product.prices.find((price) => price.state).toJSON(), ['state', 'createdAt', 'updatedAt', 'productId']),
   id: product.id
 });
