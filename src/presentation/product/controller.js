@@ -145,10 +145,6 @@ const deleteProduct = async (req, res = response) => {
       product: await functionGetProduct(productId),
       msg: 'producto eliminado'
     });
-    await db.price.update(
-      { state: false },
-      { where: { productId: productId } }
-    )
   } catch (error) {
     console.log(error)
     return res.status(500).json({
