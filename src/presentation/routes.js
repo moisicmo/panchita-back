@@ -24,7 +24,9 @@ const AppRoutes = async (app) => {
 
 
   app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, './../public/index.html'))
+    const indexPath = path.resolve(__dirname, './../../public/index.html');
+    console.log("Ruta del archivo index.html:", indexPath);
+    res.sendFile(indexPath);
   });
 };
 
