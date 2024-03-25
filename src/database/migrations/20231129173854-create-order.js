@@ -55,6 +55,10 @@ module.exports = {
         type: Sequelize.BOOLEAN,
         defaultValue: false
       },
+      delivery: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
+      },
       state: {
         type: Sequelize.BOOLEAN,
         defaultValue: true

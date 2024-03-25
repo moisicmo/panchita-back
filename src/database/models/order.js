@@ -40,6 +40,7 @@ module.exports = (sequelize, DataTypes) => {
     amount: DataTypes.FLOAT,
     document:DataTypes.STRING,
     stateSale: DataTypes.BOOLEAN,
+    delivery: DataTypes.BOOLEAN,
     state: DataTypes.BOOLEAN,
   }, {
     sequelize,

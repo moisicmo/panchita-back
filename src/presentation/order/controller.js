@@ -82,6 +82,7 @@ const functionGetOrder = async (orderId = null, where = undefined, whereBranchOf
   }
 };
 
+
 const getOrders = async (req, res = response) => {
   try {
     return res.json({
@@ -110,6 +111,8 @@ const getOrderByBranchOffice = async (req, res = response) => {
   }
 }
 
+
+
 const createSale = async (req, res = response) => {
   try {
     const { orderId } = req.params;
@@ -133,7 +136,7 @@ const createSale = async (req, res = response) => {
   }
 }
 
-const createOrder = async (req, res = response) => {
+const createOrder = async (req, res = response,io) => {
   try {
     //creamos la orden
     const order = new db.order(req.body);
@@ -179,10 +182,13 @@ const createOrder = async (req, res = response) => {
       branchOfficeId: parseInt(req.body.branchOfficeId)
     }));
 
-    const orderInfo = await functionGetOrder(order.id)
+    const orderInfo = await functionGetOrder(newOrder.id)
     const { pdfBase64 } = await generateDocument(orderInfo, 'PROFORMA');
+    io.emit('newOrder', JSON.stringify(orderInfo) );
     return res.json({
       ok: true,
+      //TODO revisar porque envia informacion de todos los productos
+      order: orderInfo,
       products: productsWithBranchOfficeId,
       document: pdfBase64,
       msg: 'orden registrado exitosamente'
@@ -365,6 +371,9 @@ const getDocument = async (req, res = response) => {
 }
 
 module.exports = {
+  //funciones
+  functionGetOrder,
+  //metodos
   getOrders,
   getOrderByBranchOffice,
   createSale,

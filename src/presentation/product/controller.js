@@ -154,6 +154,9 @@ const deleteProduct = async (req, res = response) => {
 }
 
 module.exports = {
+  //funciones
+  functionGetProduct,
+  //metodos
   getProducts,
   createProduct,
   updateProduct,

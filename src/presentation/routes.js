@@ -1,6 +1,7 @@
 const path = require('path');
 
-const AppRoutes = async (app) => {
+const AppRoutes = async (app,io) => {
+
 
   app.use('/api/auth', require('./auth/routes'));
 
@@ -14,12 +15,11 @@ const AppRoutes = async (app) => {
   app.use('/api/staff', require('./staff/routes'));
   app.use('/api/customer', require('./customer/routes'));
   app.use('/api/product', require('./product/routes'));
-  app.use('/api/order', require('./order/routes'));
+  app.use('/api/order', require('./order/routes')(io));
   app.use('/api/kardex', require('./kardex/routes'));
   app.use('/api/input', require('./input/routes'))
   app.use('/api/sale', require('./sale/routes'));
-
-  // app.use('/api/report', require('./product/routes'));
+  app.use('/api/report', require('./report/routes'));
 
 
 

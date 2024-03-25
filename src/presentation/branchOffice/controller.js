@@ -105,6 +105,9 @@ const deleteBranchOffice = async (req, res = response) => {
 }
 
 module.exports = {
+  //funciones
+  functionGetBranchOffice,
+  //metodos
   getBranchOffices,
   createBranchOffice,
   updateBranchOffice,
