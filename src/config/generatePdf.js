@@ -1,8 +1,10 @@
 const pdfMake = require('pdfmake');
 const numeroEnLetras = require('./convertNumbertoString');
+const { GoogleDriveService } = require('./googleDrive.js');
 
 const { format } = require('date-fns');
-const esES = require('date-fns/locale/es')
+const esES = require('date-fns/locale/es');
+const { Readable } = require('stream');
 
 const generatePdf = async (order, title) => {
   const fonts = {
@@ -153,7 +155,22 @@ const generatePdf = async (order, title) => {
     });
     pdfDoc.on('end', async () => {
       const pdfData = Buffer.concat(chunks);
+      const pdfStream = new Readable();
+            pdfStream.push(pdfData);
+            pdfStream.push(null);
       const pdfBase64 = pdfData.toString('base64');
+      //
+
+      const googleDriveService = new GoogleDriveService();
+      let folder = await googleDriveService.searchFolder('1Gb4YD5Yik5zdmbcV-u0gzk3HWJhcujC7')
+      if (!folder) {
+          folder = await googleDriveService.createFolder('1Gb4YD5Yik5zdmbcV-u0gzk3HWJhcujC7');
+      }
+      console.log(folder)
+      const response = await googleDriveService.saveFile(order.id, pdfStream, 'application/pdf', '1Gb4YD5Yik5zdmbcV-u0gzk3HWJhcujC7').catch((error) => {
+          console.error(error);
+      });
+      //
       resolve({ pdfBase64 });
     });
     pdfDoc.end();
