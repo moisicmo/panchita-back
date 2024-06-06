@@ -45,8 +45,8 @@ class ServerApp {
     this.app.use(express.json());
 
     // Directorio Público
-    // const publicPath = path.resolve(__dirname, './../public');
-    // this.app.use(express.static(publicPath));
+    const publicPath = path.resolve(__dirname, './../public');
+    this.app.use(express.static(publicPath));
   }
 
   routes() {
