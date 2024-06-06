@@ -60,7 +60,7 @@ class GoogleDriveService {
   saveFile(fileName, fileStream, fileMimeType, folderId) {
     var fileMetaData = {
       name:'mydrivetext.pdf',    
-      parents:['1Gb4YD5Yik5zdmbcV-u0gzk3HWJhcujC7'] // A folder ID to which file will get uploaded
+      parents:['1IUbVtdsxBeUCfoFk7SdcXLkZ6iY_zZLL'] // A folder ID to which file will get uploaded
   }
     return this.driveClient.files.create({
       resource:fileMetaData,
