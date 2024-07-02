@@ -4,8 +4,8 @@ const db = require('../../database/models');
 const { omit } = require("lodash");
 
 const searchStaff = async (staffId) => {
-  const staff = await db.staff.findByPk(staffId, {
-    include: [
+  const staff = await db.staff.findByPk(staffId,
+    {include: [
       {
         model: db.branchOfficeStaff,
         where: { state: true },
@@ -57,7 +57,9 @@ const functionGetStaff = async (staffId = null, where = undefined) => {
     ],
   };
   if (staffId) {
+    console.log(staffId)
     const staff = await db.staff.findByPk(staffId, queryOptions);
+    console.log(staff)
     return formatStaff(staff);
   } else {
     const staffs = await db.staff.findAll({ ...queryOptions, where: where });
@@ -134,6 +136,7 @@ const updateStaff = async (req, res = response) => {
         errors: [{ msg: 'No se encontró el staff' }]
       });
     }
+    console.log(staff.toJSON());
     //modificamos el staff
     await db.staff.update(
       req.body,
@@ -205,6 +208,11 @@ const deleteStaff = async (req, res = response) => {
         errors: [{ msg: 'No se encontró el staff' }]
       });
     }
+    if(staff.superStaff){
+      return res.status(404).json({
+        errors: [{ msg: 'No es posible eliminar a un super Staff' }]
+      });
+    }
     //modificamos al staff
     await db.staff.update(
       { state: false },
@@ -219,7 +227,6 @@ const deleteStaff = async (req, res = response) => {
     );
     return res.json({
       ok: true,
-      staff: await functionGetStaff(staffId),
       msg: 'staff eliminado'
     });
   } catch (error) {

@@ -55,12 +55,12 @@ const getProducts = async (req, res = response) => {
 
 const createProduct = async (req, res = response) => {
   try {
+    let product = new db.product(req.body);
     const { name } = req.body;
     const uuid4 = uuid.v4();
     const nameInitials = name.substr(0, 3).toUpperCase();
     const numericUuid = uuid4.replace(/\D/g, '');
     const uuidSlice = numericUuid.slice(0, 2) + numericUuid.slice(-2);
-    let product = new db.product(req.body);
     product.code = nameInitials + uuidSlice;
     product.image = null;
     await product.save();
@@ -93,8 +93,21 @@ const updateProduct = async (req, res = response) => {
       });
     }
     //modificamos el producto
+    const { name } = req.body;
+    let newName = product.code;
+    if (name != product.name){
+      const uuid4 = uuid.v4();
+      const nameInitials = name.substr(0, 3).toUpperCase();
+      const numericUuid = uuid4.replace(/\D/g, '');
+      const uuidSlice = numericUuid.slice(0, 2) + numericUuid.slice(-2);
+      newName = nameInitials + uuidSlice
+    }
+
     await db.product.update(
-      req.body,
+      {
+        ...req.body,
+        code: newName
+      },
       { where: { id: productId } }
     )
 
