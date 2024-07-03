@@ -52,141 +52,129 @@ module.exports = {
     ]);
     //crear permisos
     await queryInterface.bulkInsert('permissions', [
-      //administradores
+      // sucursales
       {
-        name: 'ver administradores',
+        name: 'listar sucursales',
+        module: 'sucursales',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'crear sucursal',
+        module: 'sucursales',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'editar sucursal',
+        module: 'sucursales',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'eliminar sucursal',
+        module: 'sucursales',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+
+      // administradores
+      {
+        name: 'listar administradores',
         module: 'administradores',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        name: 'crear administradores',
+        name: 'crear administrador',
         module: 'administradores',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        name: 'editar administradores',
+        name: 'editar administrador',
         module: 'administradores',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        name: 'eliminar administradores',
+        name: 'eliminar administrador',
         module: 'administradores',
         createdAt: new Date(),
         updatedAt: new Date()
       },
-      //roles
+
+      // roles
       {
-        name: 'ver roles',
+        name: 'listar roles',
         module: 'roles',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        name: 'crear roles',
+        name: 'crear rol',
         module: 'roles',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        name: 'editar roles',
+        name: 'editar rol',
         module: 'roles',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        name: 'eliminar roles',
+        name: 'eliminar rol',
         module: 'roles',
         createdAt: new Date(),
         updatedAt: new Date()
       },
-      //permisos
+
+      // permisos
       {
-        name: 'ver permisos',
+        name: 'listar permisos',
         module: 'permisos',
         createdAt: new Date(),
         updatedAt: new Date()
       },
-      //clientes
+
+      // clientes
       {
-        name: 'ver clientes',
+        name: 'listar clientes',
         module: 'clientes',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        name: 'crear clientes',
+        name: 'crear cliente',
         module: 'clientes',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        name: 'editar clientes',
+        name: 'editar cliente',
         module: 'clientes',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        name: 'eliminar clientes',
+        name: 'eliminar cliente',
         module: 'clientes',
         createdAt: new Date(),
         updatedAt: new Date()
       },
-      //tipos de documentos
+
+      // tipos de documentos
       {
-        name: 'ver tipos de documentos',
+        name: 'listar tipos de documentos',
         module: 'tipos de documentos',
         createdAt: new Date(),
         updatedAt: new Date()
       },
+
+      // categorias
       {
-        name: 'crear tipos de documentos',
-        module: 'tipos de documentos',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        name: 'editar tipos de documentos',
-        module: 'tipos de documentos',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        name: 'eliminar tipos de documentos',
-        module: 'tipos de documentos',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      //productos
-      {
-        name: 'ver productos',
-        module: 'productos',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        name: 'crear productos',
-        module: 'productos',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        name: 'editar productos',
-        module: 'productos',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        name: 'eliminar productos',
-        module: 'productos',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      //categoria
-      {
-        name: 'ver categorias',
+        name: 'listar categorias',
         module: 'categorias',
         createdAt: new Date(),
         updatedAt: new Date()
@@ -209,34 +197,62 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date()
       },
-      //unidades de medidas
+
+      // unidades de medidas
       {
-        name: 'ver unidades de medidas',
+        name: 'listar unidades de medidas',
         module: 'unidades de medidas',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        name: 'crear unidades de medidas',
+        name: 'crear unidad de medida',
         module: 'unidades de medidas',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        name: 'editar unidades de medidas',
+        name: 'editar unidad de medida',
         module: 'unidades de medidas',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        name: 'eliminar unidades de medidas',
+        name: 'eliminar unidad de medida',
         module: 'unidades de medidas',
         createdAt: new Date(),
         updatedAt: new Date()
       },
-      //movimientos
+
+      // productos
       {
-        name: 'ver movimientos',
+        name: 'listar productos',
+        module: 'productos',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'crear producto',
+        module: 'productos',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'editar producto',
+        module: 'productos',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'eliminar producto',
+        module: 'productos',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+
+      // movimientos
+      {
+        name: 'listar movimientos',
         module: 'movimientos',
         createdAt: new Date(),
         updatedAt: new Date()
@@ -247,25 +263,7 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date()
       },
-      //ordenes y ventas
-      {
-        name: 'ver ordenes y ventas',
-        module: 'ordenes y ventas',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        name: 'editar orden',
-        module: 'ordenes y ventas',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        name: 'eliminar orden o venta',
-        module: 'ordenes y ventas',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
+      
       //punto de venta
       {
         name: 'ver punto de venta',
@@ -285,9 +283,30 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date()
       },
+
+      //ordenes y ventas
+      {
+        name: 'listar ordenes y ventas',
+        module: 'ordenes y ventas',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'editar orden',
+        module: 'ordenes y ventas',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'eliminar orden o venta',
+        module: 'ordenes y ventas',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+
       //reporte
       {
-        name: 'ver reportes',
+        name: 'generar reportes',
         module: 'reporte',
         createdAt: new Date(),
         updatedAt: new Date()
