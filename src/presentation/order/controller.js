@@ -136,7 +136,7 @@ const createSale = async (req, res = response) => {
   }
 }
 
-const createOrder = async (req, res = response,io) => {
+const createOrder = async (req, res = response, io) => {
   try {
     //creamos la orden
     const order = new db.order(req.body);
@@ -184,7 +184,7 @@ const createOrder = async (req, res = response,io) => {
 
     const orderInfo = await functionGetOrder(newOrder.id)
     const { pdfBase64 } = await generateDocument(orderInfo, 'PROFORMA');
-    io.emit('newOrder', JSON.stringify(orderInfo) );
+    io.emit('newOrder', JSON.stringify(orderInfo));
     return res.json({
       ok: true,
       //TODO revisar porque envia informacion de todos los productos
@@ -202,7 +202,6 @@ const createOrder = async (req, res = response,io) => {
 }
 
 const updateOrder = async (req, res = response) => {
-  console.log('HOLA EDITANDO');
   const { orderId } = req.params;
   try {
     // Encontramos la orden
@@ -215,7 +214,7 @@ const updateOrder = async (req, res = response) => {
     // actualizamos los outputs
     await Promise.all(req.body.outputs.map(async (item) => {
       //encontramos el registro original del output
-      const output = await db.output.findOne({where:{id:item.id}})
+      const output = await db.output.findOne({ where: { id: item.id } })
       await db.output.update(
         {
           quantity: item.quantity
@@ -233,12 +232,14 @@ const updateOrder = async (req, res = response) => {
       // actualizamos el kardex
       await db.kardex.update(
         {
-          stock: kardex.stock+ (output.quantity-item.quantity)
+          stock: kardex.stock + (output.quantity - item.quantity)
         },
-        { where: { 
-          inputOrOutputId:item.id,
-          inputOrOutputType: 'outputs',
-         } }
+        {
+          where: {
+            inputOrOutputId: item.id,
+            inputOrOutputType: 'outputs',
+          }
+        }
       );
     }));
 
@@ -275,7 +276,7 @@ const updateOrder = async (req, res = response) => {
     //actualizamos la orden
     await db.order.update(
       {
-        amount: req.body.outputs.reduce((sum, element) => sum + (element.quantity * element.price), 0)+req.body.newOutputs.reduce((sum, element) => sum + (element.quantity * element.product.price), 0)
+        amount: req.body.outputs.reduce((sum, element) => sum + (element.quantity * element.price), 0) + req.body.newOutputs.reduce((sum, element) => sum + (element.quantity * element.product.price), 0)
       },
       { where: { id: orderId } }
     );
@@ -288,6 +289,39 @@ const updateOrder = async (req, res = response) => {
       msg: 'Orden editada exitosamente'
     });
 
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      errors: [{ msg: 'Error en el servidor. Por favor, contacte al administrador.' }]
+    });
+  }
+}
+
+const dispatchOrder = async (req, res = response, io) => {
+
+  const { orderId } = req.params;
+  try {
+    // Encontramos la orden
+    const order = await searchOrder(orderId);
+    if (!order) {
+      return res.status(404).json({
+        errors: [{ msg: 'No se encontró la orden' }]
+      });
+    }
+    //actualizamos la orden
+    await db.order.update(
+      {
+        delivery: true,
+      },
+      { where: { id: orderId } }
+    );
+    const orderInfo = await functionGetOrder(order.id)
+    io.emit('dispatchOrder', JSON.stringify(order.id));
+    return res.json({
+      ok: true,
+      order: orderInfo,
+      msg: 'Orden despachada exitosamente'
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).json({
@@ -379,6 +413,7 @@ module.exports = {
   createSale,
   createOrder,
   updateOrder,
+  dispatchOrder,
   deleteOrder,
   getDocument,
 }

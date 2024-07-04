@@ -164,47 +164,27 @@ module.exports = {
         updatedAt: new Date()
       },
 
-      // tipos de documentos
-      {
-        name: 'listar tipos de documentos',
-        module: 'tipos de documentos',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-
       // categorias
       {
-        name: 'listar categorias',
+        name: 'crear categoria',
         module: 'categorias',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        name: 'crear categorias',
+        name: 'editar categoria',
         module: 'categorias',
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
-        name: 'editar categorias',
-        module: 'categorias',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        name: 'eliminar categorias',
+        name: 'eliminar categoria',
         module: 'categorias',
         createdAt: new Date(),
         updatedAt: new Date()
       },
 
       // unidades de medidas
-      {
-        name: 'listar unidades de medidas',
-        module: 'unidades de medidas',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
       {
         name: 'crear unidad de medida',
         module: 'unidades de medidas',
@@ -272,12 +252,6 @@ module.exports = {
         updatedAt: new Date()
       },
       {
-        name: 'agregar items al carrito',
-        module: 'punto de venta',
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
         name: 'vender',
         module: 'punto de venta',
         createdAt: new Date(),
@@ -298,8 +272,28 @@ module.exports = {
         updatedAt: new Date()
       },
       {
+        name: 'descargar pdf',
+        module: 'ordenes y ventas',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
         name: 'eliminar orden o venta',
         module: 'ordenes y ventas',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+
+      // entregas
+      {
+        name: 'listar entregas',
+        module: 'entregas',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        name: 'hacer entrega',
+        module: 'entregas',
         createdAt: new Date(),
         updatedAt: new Date()
       },

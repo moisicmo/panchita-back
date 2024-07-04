@@ -12,13 +12,14 @@ class ServerApp {
     this.app = express();
     this.port = process.env.PORT;
     this.server = createServer(this.app);
+
     this.io = new Server(this.server, {
       cors: {
         origin: "*", // Permite solicitudes desde cualquier origen
         methods: ["GET", "POST"] // Permite los métodos GET y POST
       }
     });
-    
+
     // Conectar a base de datos
     this.conectarDB();
 
@@ -50,7 +51,7 @@ class ServerApp {
   }
 
   routes() {
-    AppRoutes(this.app,this.io);
+    AppRoutes(this.app, this.io);
   }
 
   listen() {
