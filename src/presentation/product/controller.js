@@ -26,6 +26,7 @@ const functionGetProduct = async (productId = null, where = undefined) => {
         where: { state: true }
       }
     ],
+    order: [['id', 'ASC']],
   };
   if (productId) {
     const product = await db.product.findByPk(productId, queryOptions);

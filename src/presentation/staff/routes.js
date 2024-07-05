@@ -2,7 +2,7 @@ const { Router } = require('express');
 const { check } = require('express-validator');
 const { validateFields } = require('./../../config');
 const { validateJWT } = require('./../../middlewares');
-const { getStaffs, createStaff, updateStaff, deleteStaff } = require('./controller');
+const { getStaffs, createStaff,resetPassword, updateStaff, deleteStaff } = require('./controller');
 
 const router = Router();
 
@@ -25,6 +25,11 @@ router.post(
     validateFields
   ],
   createStaff
+);
+
+router.put(
+  '/reset/pwd/:staffId',
+  resetPassword
 );
 
 router.put(

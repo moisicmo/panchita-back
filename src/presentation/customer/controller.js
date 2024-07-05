@@ -25,6 +25,7 @@ const functionGetCustomer = async (customerId) => {
         include: [{ model: db.typeDocument }]
       },
     ],
+    order: [['id', 'ASC']],
   };
   if (customerId) {
     const customer = await db.customer.findByPk(customerId, queryOptions);

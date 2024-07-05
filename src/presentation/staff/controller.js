@@ -3,13 +3,35 @@ const bcrypt = require('bcryptjs');
 const db = require('../../database/models');
 const { omit } = require("lodash");
 
+const searchUser = async (userId) => {
+  console.log(`BUSCANDO USUARIO ${userId}`)
+  const user = await db.user.findByPk(userId,
+    {
+      include:[
+        {
+          model: db.staff,
+          include:[
+            {
+              model: db.branchOfficeStaff,
+            }
+          ]
+        }
+      ]
+  });
+  return user;
+}
+
 const searchStaff = async (staffId) => {
   const staff = await db.staff.findByPk(staffId,
-    {include: [
+    {
+      include: [
       {
         model: db.branchOfficeStaff,
         where: { state: true },
         include: [{ model: db.branchOffice }]
+      },
+      {
+        model: db.user
       }
     ]
   });
@@ -55,6 +77,7 @@ const functionGetStaff = async (staffId = null, where = undefined) => {
         include: [{ model: db.branchOffice }]
       }
     ],
+    order: [['id', 'ASC']],
   };
   if (staffId) {
     console.log(staffId)
@@ -126,6 +149,40 @@ const createStaff = async (req, res = response) => {
   }
 }
 
+const resetPassword  = async (req, res = response) => {
+  try {
+    const { staffId } = req.params;
+    //encontramos el staff
+    const staff = await searchStaff(staffId)
+    if (!staff) {
+      return res.status(404).json({
+        errors: [{ msg: 'No se encontró el staff' }]
+      });
+    }
+    console.log(staff.toJSON());
+    //modificamos el staff
+    //  encriptar contraseña
+    const salt = bcrypt.genSaltSync();
+    await db.staff.update(
+      {
+        password : bcrypt.hashSync(`${staff.user.numberDocument}`, salt)
+      },
+      {
+        where: { id: staffId },
+      }
+    )
+    return res.json({
+      ok: true,
+      staff: await functionGetStaff(staffId),
+      msg: 'staff editado exitosamente'
+    });
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+      errors: [{ msg: 'Por favor hable con el administrador' }]
+    });
+  }
+}
 const updateStaff = async (req, res = response) => {
   const { staffId } = req.params;
   try {
@@ -238,8 +295,10 @@ const deleteStaff = async (req, res = response) => {
 }
 
 module.exports = {
+  searchUser,
   getStaffs,
   createStaff,
+  resetPassword,
   updateStaff,
   deleteStaff,
 }

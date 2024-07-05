@@ -78,6 +78,7 @@ const functionGetSale = async (saleId = null, where = undefined) => {
         ]
       },
     ],
+    order: [['id', 'ASC']],
   };
   if (saleId) {
     const sale = await db.sale.findByPk(saleId, queryOptions);

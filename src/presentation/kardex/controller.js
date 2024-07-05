@@ -1,6 +1,7 @@
 const { response } = require('express');
 const db = require('../../database/models');
 const { omit } = require("lodash");
+const {searchUser} = require('../staff/controller');
 
 const formatKardex = (kardex) => ({
   ...omit(kardex.toJSON(), ['createdAt', 'updatedAt', 'productId', 'branchOfficeId', 'inputOrOutputId']),
@@ -48,6 +49,7 @@ const functionGetKardex = async (kardexId = null,where = undefined) => {
         order: [['createdAt', 'DESC']] // Ordena por la columna createdAt en orden descendente
       },
     ],
+    // order: [['id', 'ASC']],
   };
   
   if (kardexId) {
@@ -158,9 +160,23 @@ const groupKardex = (inputArray) => {
 
 const getKardex = async (req, res = response) => {
   try {
+    console.log(req.uid)
+    //encontramos al usuario que esta logueado
+    const user = await searchUser(req.uid);
+    if (!user) {
+      return res.status(404).json({
+        errors: [{ msg: 'No se encontró el staff' }]
+      });
+    }
+    const branchOfficeIds = user.staffs[0].branchOfficeStaffs.map((e)=>e.branchOfficeId);
+    const isSuperStaff = user.staffs[0].superStaff;
+    let whereCondition = { };
+    if (!isSuperStaff) {
+      whereCondition.branchOfficeId = branchOfficeIds;
+    }
     return res.json({
       ok: true,
-      kardex: await functionGetKardex(null)
+      kardex: await functionGetKardex(null,whereCondition)
     });
   } catch (error) {
     console.log(error)

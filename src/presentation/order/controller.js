@@ -72,6 +72,7 @@ const functionGetOrder = async (orderId = null, where = undefined, whereBranchOf
         ]
       }
     ],
+    order: [['id', 'ASC']],
   };
   if (orderId) {
     const order = await db.order.findByPk(orderId, queryOptions);

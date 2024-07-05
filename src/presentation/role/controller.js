@@ -18,7 +18,7 @@ const searchRole = async (roleId) => {
 
 const formatRole = (role) => ({
   ...omit(role.toJSON(), ['createdAt', 'updatedAt', 'rolePermissions', 'state', 'businessId']),
-  permissionIds: role.rolePermissions.map(rolePermission => omit(rolePermission.permission.toJSON(), ['createdAt', 'updatedAt'])),
+  permissions: role.rolePermissions.map(rolePermission => omit(rolePermission.permission.toJSON(), ['createdAt', 'updatedAt'])),
 });
 
 const functionGetRole = async (roleId = null, where = undefined) => {
@@ -34,6 +34,7 @@ const functionGetRole = async (roleId = null, where = undefined) => {
         ]
       }
     ],
+    order: [['id', 'ASC']],
   };
   if (roleId) {
     const role = await db.role.findByPk(roleId, queryOptions);

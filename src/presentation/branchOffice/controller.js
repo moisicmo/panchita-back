@@ -1,6 +1,7 @@
 const { response } = require('express');
 const db = require('../../database/models');
 const { omit } = require("lodash");
+const { searchUser } = require('../staff/controller');
 
 const searchBranchOffice = async (branchOfficeId) => {
   const branchOffice = await db.branchOffice.findByPk(branchOfficeId);
@@ -27,10 +28,28 @@ const functionGetBranchOffice = async (branchOfficeId = null, where = undefined)
 };
 
 const getBranchOffices = async (req, res = response) => {
+
   try {
+    console.log(req.uid)
+    //encontramos al usuario que esta logueado
+    const user = await searchUser(req.uid);
+    if (!user) {
+      return res.status(404).json({
+        errors: [{ msg: 'No se encontró el staff' }]
+      });
+    }
+    const branchOfficeIds = user.staffs[0].branchOfficeStaffs.map((e) => e.branchOfficeId)
+    const isSuperStaff = user.staffs[0].superStaff;
+
+    let whereCondition = { state: true };
+
+    if (!isSuperStaff) {
+      whereCondition.id = branchOfficeIds;
+    }
+    // branchOfficeId:branchOfficeIds
     return res.json({
       ok: true,
-      branchOffices: await functionGetBranchOffice(null, { state: true })
+      branchOffices: await functionGetBranchOffice(null, whereCondition)
     });
   } catch (error) {
     console.log(error)
