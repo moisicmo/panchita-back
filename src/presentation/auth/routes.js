@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const { check } = require('express-validator');
 const { validateFields } = require('../../config');
-const { authStaff } = require('./controller');
+const { authStaff,changePassword } = require('./controller');
 
 const router = Router();
 
@@ -14,6 +14,11 @@ router.post(
     validateFields
   ],
   authStaff
+);
+
+router.post(
+  '/change/pwd/:staffId',
+  changePassword
 );
 
 

@@ -7,17 +7,17 @@ const searchUser = async (userId) => {
   console.log(`BUSCANDO USUARIO ${userId}`)
   const user = await db.user.findByPk(userId,
     {
-      include:[
+      include: [
         {
           model: db.staff,
-          include:[
+          include: [
             {
               model: db.branchOfficeStaff,
             }
           ]
         }
       ]
-  });
+    });
   return user;
 }
 
@@ -25,16 +25,16 @@ const searchStaff = async (staffId) => {
   const staff = await db.staff.findByPk(staffId,
     {
       include: [
-      {
-        model: db.branchOfficeStaff,
-        where: { state: true },
-        include: [{ model: db.branchOffice }]
-      },
-      {
-        model: db.user
-      }
-    ]
-  });
+        {
+          model: db.branchOfficeStaff,
+          where: { state: true },
+          include: [{ model: db.branchOffice }]
+        },
+        {
+          model: db.user
+        }
+      ]
+    });
   return staff;
 }
 
@@ -149,7 +149,7 @@ const createStaff = async (req, res = response) => {
   }
 }
 
-const resetPassword  = async (req, res = response) => {
+const resetPassword = async (req, res = response) => {
   try {
     const { staffId } = req.params;
     //encontramos el staff
@@ -165,7 +165,7 @@ const resetPassword  = async (req, res = response) => {
     const salt = bcrypt.genSaltSync();
     await db.staff.update(
       {
-        password : bcrypt.hashSync(`${staff.user.numberDocument}`, salt)
+        password: bcrypt.hashSync(`${staff.user.numberDocument}`, salt)
       },
       {
         where: { id: staffId },
@@ -265,7 +265,7 @@ const deleteStaff = async (req, res = response) => {
         errors: [{ msg: 'No se encontró el staff' }]
       });
     }
-    if(staff.superStaff){
+    if (staff.superStaff) {
       return res.status(404).json({
         errors: [{ msg: 'No es posible eliminar a un super Staff' }]
       });
@@ -296,6 +296,7 @@ const deleteStaff = async (req, res = response) => {
 
 module.exports = {
   searchUser,
+  searchStaff,
   getStaffs,
   createStaff,
   resetPassword,

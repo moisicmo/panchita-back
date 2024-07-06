@@ -32,7 +32,8 @@ module.exports = (sequelize, DataTypes) => {
     roleId: DataTypes.INTEGER,
     password: DataTypes.STRING,
     state: DataTypes.BOOLEAN,
-    superStaff: DataTypes.BOOLEAN
+    superStaff: DataTypes.BOOLEAN,
+    validate: DataTypes.BOOLEAN,
   }, {
     sequelize,
     modelName: 'staff',

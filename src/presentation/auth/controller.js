@@ -3,6 +3,7 @@ const db = require('../../database/models');
 const bcrypt = require('bcryptjs');
 const { generateJWT } = require('./../../config');
 const { omit } = require("lodash");
+const { searchStaff } = require('../staff/controller');
 
 const authStaff = async (req, res = response) => {
   const { email, password } = req.body;
@@ -79,7 +80,48 @@ const authStaff = async (req, res = response) => {
     });
   }
 }
+const changePassword = async (req, res = response) => {
+  try {
+    const { staffId } = req.params;
+    const { password1, password2 } = req.body;
+    //encontramos el staff
+    const staff = await searchStaff(staffId)
+    if (!staff) {
+      return res.status(404).json({
+        errors: [{ msg: 'No se encontró el staff' }]
+      });
+    }
+    if (password1 != password2) {
+      return res.status(404).json({
+        errors: [{ msg: 'No son iguales las contraseñas' }]
+      });
+    }
+    console.log(staff.toJSON());
+    // modificamos el staff
+    // encriptar contraseña
+    const salt = bcrypt.genSaltSync();
+    await db.staff.update(
+      {
+        password: bcrypt.hashSync(`${password1}`, salt),
+        validate: true,
+      },
+      {
+        where: { id: staffId },
+      }
+    )
+    return res.json({
+      ok: true,
+      msg: 'la contraseña se modificó correctamente'
+    });
 
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+      errors: [{ msg: 'Por favor hable con el administrador' }]
+    });
+  }
+}
 module.exports = {
   authStaff,
+  changePassword,
 }
