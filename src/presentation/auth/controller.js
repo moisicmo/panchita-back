@@ -3,7 +3,6 @@ const db = require('../../database/models');
 const bcrypt = require('bcryptjs');
 const { generateJWT } = require('./../../config');
 const { omit } = require("lodash");
-const { searchStaff } = require('../staff/controller');
 
 const authStaff = async (req, res = response) => {
   const { email, password } = req.body;
@@ -80,6 +79,12 @@ const authStaff = async (req, res = response) => {
     });
   }
 }
+
+const searchStaff = async (staffId) => {
+  const staff = await db.staff.findByPk(staffId);
+  return staff;
+}
+
 const changePassword = async (req, res = response) => {
   try {
     const { staffId } = req.params;
