@@ -1,6 +1,5 @@
 const pdfMake = require('pdfmake');
 const numeroEnLetras = require('./convertNumbertoString');
-const { GoogleDriveService } = require('./googleDrive.js');
 
 const { format } = require('date-fns');
 const esES = require('date-fns/locale/es');
@@ -31,7 +30,7 @@ const generatePdf = async (order, title) => {
           widths: ['*', '*'],
           body: [
             [
-              { text: 'PANCHITA', style: 'styleLeft' },
+              { text: 'SUPER BALANCE', style: 'styleLeft' },
               { text: `COMPROBANTE N° ${order.id}`, style: 'styleRight' },
             ],
             [
@@ -159,18 +158,6 @@ const generatePdf = async (order, title) => {
             pdfStream.push(pdfData);
             pdfStream.push(null);
       const pdfBase64 = pdfData.toString('base64');
-      //
-
-      const googleDriveService = new GoogleDriveService();
-      let folder = await googleDriveService.searchFolder('1IUbVtdsxBeUCfoFk7SdcXLkZ6iY_zZLL')
-      if (!folder) {
-          folder = await googleDriveService.createFolder('1IUbVtdsxBeUCfoFk7SdcXLkZ6iY_zZLL');
-      }
-      console.log(folder)
-      const response = await googleDriveService.saveFile(order.id, pdfStream, 'application/pdf', '1IUbVtdsxBeUCfoFk7SdcXLkZ6iY_zZLL').catch((error) => {
-          console.error(error);
-      });
-      //
       resolve({ pdfBase64 });
     });
     pdfDoc.end();
